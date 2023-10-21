@@ -1,12 +1,12 @@
-# Stage 1: Build the application
-FROM node:16-alpine AS builder
-WORKDIR /app
+FROM node:16-alpine3.11 as staging
+WORKDIR /home/app
 COPY . .
-RUN yarn install
+RUN npm install
+RUN npm run build
 
-# Stage 2: Create a smaller image
-FROM node:16-alpine
-WORKDIR /app
-COPY --from=builder /app /app
+FROM node:16-alpine3.11
+WORKDIR /home/app
+COPY --from=staging /home/app /home/app
+RUN npm install -g server
 EXPOSE 3000
-CMD ["yarn", "start"]
+CMD ["npx","serve","build","-l","3000"]
